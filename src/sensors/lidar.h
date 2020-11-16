@@ -18,9 +18,9 @@ struct Ray {
   // setOrigin: the starting position from where the ray is cast
   // horizontalAngle: the angle of direction the ray travels on the xy plane
   // verticalAngle: the angle of direction between xy plane and ray
-  // 				  for example 0 radians is along xy plane and pi/2 radians
-  // is stright up resolution: the magnitude of the ray's step, used for ray
-  // casting, the smaller the more accurate but the more expensive
+  // 				  for example 0 radians is along xy plane and pi/2
+  // radians is stright up resolution: the magnitude of the ray's step, used for
+  // ray casting, the smaller the more accurate but the more expensive
 
   Ray(Vect3 setOrigin, double horizontalAngle, double verticalAngle,
       double setResolution)
