@@ -56,6 +56,8 @@ ProcessPointClouds<PointT>::SeparateClouds(
   extract.setInputCloud(cloud);
   extract.setIndices(inliers);
   extract.setNegative(true);
+  // obstactle_cloud is a pointer, therefore you need to dereference it
+  // as you pass it into filter
   extract.filter(*obstacle_cloud);
 
   std::pair<typename pcl::PointCloud<PointT>::Ptr,
