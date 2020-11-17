@@ -18,9 +18,9 @@ struct Ray {
   // setOrigin: the starting position from where the ray is cast
   // horizontalAngle: the angle of direction the ray travels on the xy plane
   // verticalAngle: the angle of direction between xy plane and ray
-  // 				  for example 0 radians is along xy plane and pi/2
-  // radians is stright up resolution: the magnitude of the ray's step, used for
-  // ray casting, the smaller the more accurate but the more expensive
+  // 				  for example 0 radians is along xy plane and
+  // pi/2 radians is stright up resolution: the magnitude of the ray's step,
+  // used for ray casting, the smaller the more accurate but the more expensive
 
   Ray(Vect3 setOrigin, double horizontalAngle, double verticalAngle,
       double setResolution)
@@ -83,22 +83,22 @@ struct Lidar {
 
   Lidar(std::vector<Car> setCars, double setGroundSlope)
       : cloud(new pcl::PointCloud<pcl::PointXYZ>()), position(0, 0, 2.6) {
-    // TODO:: set minDistance to 5 to remove points from roof of ego car
-    minDistance = 0;
+    // minDistance is 5 meters to remove points from roof of ego car
+    minDistance = 5;
     maxDistance = 50;
     resolution = 0.2;
-    // TODO:: set sderr to 0.2 to get more interesting pcd files
-    sderr = 0.0;
+    // sderr adds noise for more interesting pcd files and
+    // increased robustness
+    sderr = 0.2;
     cars = setCars;
     groundSlope = setGroundSlope;
 
-    // TODO:: increase number of layers to 8 to get higher resolution pcd
-    int numLayers = 3;
+    // A higher number of layers yields a higher resolution pcd
+    int numLayers = 8;
     // the steepest vertical angle
     double steepestAngle = 30.0 * (-pi / 180);
     double angleRange = 26.0 * (pi / 180);
-    // TODO:: set to pi/64 to get higher resolution pcd
-    double horizontalAngleInc = pi / 6;
+    double horizontalAngleInc = pi / 64;
 
     double angleIncrement = angleRange / numLayers;
 
