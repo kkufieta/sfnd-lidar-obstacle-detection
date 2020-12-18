@@ -71,13 +71,32 @@ void render2DTree(Node *node, pcl::visualization::PCLVisualizer::Ptr &viewer,
   }
 }
 
+void proximity(int id, const std::vector<std::vector<float>> &points,
+               std::vector<int> &cluster, KdTree *tree, float distanceTol,
+               std::vector<bool> &seen) {
+  seen[id] = true;
+  cluster.push_back(id);
+  std::vector<int> nearby_points = tree->search(points[id], distanceTol);
+  for (int point_id : nearby_points) {
+    if (!seen[point_id]) {
+      proximity(point_id, points, cluster, tree, distanceTol, seen);
+    }
+  }
+}
+
 std::vector<std::vector<int>>
 euclideanCluster(const std::vector<std::vector<float>> &points, KdTree *tree,
                  float distanceTol) {
 
-  // TODO: Fill out this function to return list of indices for each cluster
-
+  std::vector<bool> seen(points.size(), false);
   std::vector<std::vector<int>> clusters;
+  for (int id = 0; id < points.size(); id++) {
+    if (!seen[id]) {
+      std::vector<int> cluster;
+      proximity(id, points, cluster, tree, distanceTol, seen);
+      clusters.push_back(cluster);
+    }
+  }
 
   return clusters;
 }
@@ -134,9 +153,10 @@ int main() {
   for (std::vector<int> cluster : clusters) {
     pcl::PointCloud<pcl::PointXYZ>::Ptr clusterCloud(
         new pcl::PointCloud<pcl::PointXYZ>());
-    for (int indice : cluster)
+    for (int indice : cluster) {
       clusterCloud->points.push_back(
           pcl::PointXYZ(points[indice][0], points[indice][1], 0));
+    }
     renderPointCloud(viewer, clusterCloud,
                      "cluster" + std::to_string(clusterId),
                      colors[clusterId % 3]);
