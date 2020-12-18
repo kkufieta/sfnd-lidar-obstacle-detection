@@ -1,6 +1,9 @@
 /* \author Aaron Brown */
 // Quiz on implementing kd tree
 
+#ifndef KDTREE_H_
+#define KDTREE_H_
+
 #include "../../render/render.h"
 #include <cmath>
 #include <iostream>
@@ -27,7 +30,7 @@ struct KdTree {
     Node **c = &root;
     int level = 0;
     while (*c != NULL) {
-      if (point[level % 2] < (*c)->point[level % 2]) {
+      if (point[level % 3] < (*c)->point[level % 3]) {
         c = &(*c)->left;
       } else {
         c = &(*c)->right;
@@ -44,14 +47,17 @@ struct KdTree {
           node->point[0] <= target[0] + distanceTol &&
           node->point[1] >= target[1] - distanceTol &&
           node->point[1] <= target[1] + distanceTol &&
+          node->point[2] >= target[2] - distanceTol &&
+          node->point[2] <= target[2] + distanceTol &&
           std::sqrt(std::pow(node->point[0] - target[0], 2) +
-                    std::pow(node->point[1] - target[1], 2)) <= distanceTol) {
+                    std::pow(node->point[1] - target[1], 2) +
+                    std::pow(node->point[2] - target[2], 2)) <= distanceTol) {
         ids.push_back(node->id);
       }
-      if (node->point[level % 2] >= target[level % 2] - distanceTol) {
+      if (node->point[level % 3] >= target[level % 3] - distanceTol) {
         searchHelper(target, node->left, level + 1, distanceTol, ids);
       }
-      if (node->point[level % 2] <= target[level % 2] + distanceTol) {
+      if (node->point[level % 3] <= target[level % 3] + distanceTol) {
         searchHelper(target, node->right, level + 1, distanceTol, ids);
       }
     }
@@ -64,3 +70,5 @@ struct KdTree {
     return ids;
   }
 };
+
+#endif /* KDTREE_H_ */
