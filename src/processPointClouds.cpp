@@ -15,6 +15,42 @@ void ProcessPointClouds<PointT>::numPoints(
 }
 
 template <typename PointT>
+void ProcessPointClouds<PointT>::obstacleDetection(
+    typename pcl::PointCloud<PointT>::Ptr cloud,
+    pcl::visualization::PCLVisualizer::Ptr &viewer) {
+
+  std::pair<typename pcl::PointCloud<PointT>::Ptr,
+            typename pcl::PointCloud<PointT>::Ptr>
+      segmented_clouds = this->SegmentPlane(
+          cloud, 100, 0.2); // maxIterations, distanceThreshold
+
+  std::pair<typename pcl::PointCloud<PointT>::Ptr,
+            typename pcl::PointCloud<PointT>::Ptr>
+      clouds = this->Segment(cloud, 100, 0.2); // maxIterations, distanceTol
+  renderPointCloud(viewer, clouds.first, "plane cloud",
+                   Color(133 / 255., 182 / 255., 255 / 255.));
+  // renderPointCloud(viewer, clouds.second, "obstacle cloud",
+  //                Color(255 / 255., 25 / 255., 251 / 255.));
+  std::vector<typename pcl::PointCloud<PointT>::Ptr> clusters =
+      this->ClusteringOwnCode(clouds.second, 0.8, 20,
+                              100); // clusterTolerance, minSize, maxSize
+
+  int clusterId = 0;
+  std::vector<Color> colors = {Color(1, 0, 0), Color(0, 0.5, 0), Color(0, 1, 0),
+                               Color(0, 0, 0.8), Color(0, 0.8, 0.8)};
+
+  for (typename pcl::PointCloud<PointT>::Ptr cluster : clusters) {
+    std::cout << "cluster size ";
+    this->numPoints(cluster);
+    renderPointCloud(viewer, cluster, "obstCloud" + std::to_string(clusterId),
+                     colors[clusterId % 5]);
+    Box box = this->BoundingBox(cluster);
+    renderBox(viewer, box, clusterId);
+    ++clusterId;
+  }
+}
+
+template <typename PointT>
 typename pcl::PointCloud<PointT>::Ptr ProcessPointClouds<PointT>::FilterCloud(
     typename pcl::PointCloud<PointT>::Ptr cloud, float filterRes,
     Eigen::Vector4f minPoint, Eigen::Vector4f maxPoint) {
@@ -393,12 +429,12 @@ BoxQ ProcessPointClouds<PointT>::BoundingBoxQ(
   projectionTransform.block<3, 3>(0, 0) = eigenVectorsPCA.transpose();
   projectionTransform.block<3, 1>(0, 3) =
       -1.f * (projectionTransform.block<3, 3>(0, 0) * pcaCentroid.head<3>());
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloudPointsProjected(
-      new pcl::PointCloud<pcl::PointXYZ>);
+  typename pcl::PointCloud<PointT>::Ptr cloudPointsProjected(
+      new pcl::PointCloud<PointT>);
   pcl::transformPointCloud(*cluster, *cloudPointsProjected,
                            projectionTransform);
   // Get the minimum and maximum points of the transformed cloud.
-  pcl::PointXYZ minPoint, maxPoint;
+  PointT minPoint, maxPoint;
   pcl::getMinMax3D(*cloudPointsProjected, minPoint, maxPoint);
   const Eigen::Vector3f meanDiagonal =
       0.5f * (maxPoint.getVector3fMap() + minPoint.getVector3fMap());

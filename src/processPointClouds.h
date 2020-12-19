@@ -30,6 +30,9 @@ public:
 
   void numPoints(typename pcl::PointCloud<PointT>::Ptr cloud);
 
+  void obstacleDetection(typename pcl::PointCloud<PointT>::Ptr cloud,
+                         pcl::visualization::PCLVisualizer::Ptr &viewer);
+
   typename pcl::PointCloud<PointT>::Ptr
   FilterCloud(typename pcl::PointCloud<PointT>::Ptr cloud, float filterRes,
               Eigen::Vector4f minPoint, Eigen::Vector4f maxPoint);
