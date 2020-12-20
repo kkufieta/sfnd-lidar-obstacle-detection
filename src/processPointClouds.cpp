@@ -32,7 +32,7 @@ void ProcessPointClouds<PointT>::obstacleDetection(
   // renderPointCloud(viewer, clouds.second, "obstacle cloud",
   //                Color(255 / 255., 25 / 255., 251 / 255.));
   std::vector<typename pcl::PointCloud<PointT>::Ptr> clusters =
-      this->ClusteringOwnCode(clouds.second, 0.4, 8,
+      this->ClusteringOwnCode(clouds.second, 0.45, 8,
                               100); // clusterTolerance, minSize, maxSize
 
   int clusterId = 0;

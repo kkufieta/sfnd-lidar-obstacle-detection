@@ -44,7 +44,7 @@ void cityBlock(pcl::visualization::PCLVisualizer::Ptr &viewer,
   // ----------------------------------------------------
 
   pcl::PointCloud<pcl::PointXYZI>::Ptr filteredCloud =
-      pointProcessorI->FilterCloud(cloud, 0.3,
+      pointProcessorI->FilterCloud(cloud, 0.4,
                                    Eigen::Vector4f{-15, -6.5, -4, 1},
                                    Eigen::Vector4f{40, 6.5, 10, 1});
   // renderPointCloud(viewer, filteredCloud, "filteredCloud");
